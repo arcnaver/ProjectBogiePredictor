@@ -39,49 +39,72 @@ import os
 from os import listdir
 
 
-
-# Prompt the user for model and image selection
-def promptUser():
+# Welcome the user
+def welcome():
 	#prompts
 	print("Welcome to Project Bogie.")
 	print("The Predictor program will need a model, .h5 or hdf5, and an image, .jpg or .png, to test.")
 	print("\n")
+
+# Prompt the user for model
+def promptUserModel():
 	
-
+	
+	#model
 	modelFound = False
-
-	imageFound = False
-
-	# Valid path and file check 
+	modelDir = ''
+	
+	# Valid model path and file check 
 	while not modelFound:
 		modelDir = input("Please insert the filepath of the predictive model: ")
 		modelExt = os.path.splitext(modelDir)
-		print("Model extension: " + modelExt[0])
-		print("Model extension: " + modelExt[1])
-
-		if modelExt[1] == '.h5' or modelExt[1] == '.hdf5':
-			print("Yay")
+		
+		# check if model[0] is valid dir
+		if not os.path.exists(modelDir):
+			print("\nFilepath error: " + modelDir + " not found.\n")
+		# check if model[1] is a valid extension
+		elif (modelExt[1] == '.h5') or (modelExt[1] == '.hdf5'):
 			modelFound = True
-		else:
-			print("Boo")
-		
-		#if (not os.path.isfile(modelDir)) or (modelExt[1] != '.hdf5' or modelExt[1] != '.h5'):
-		#	print(modelDir, 'Filepath does not point to a compatible model file of extention .h5 or .hdf5')
-			
-		#else:
-		#	print("Thank You")
-		#	modelFound = True
-		
-
+			print("Model found.\n")
+		else:			
+			print("\nError: .h5 or .hdf5 model not found.")
+			print("Please select a compatible model (<model name>.h5, <model name>.hdf5) \n")
 	
+			
 
-	# make sure the path exists
-	#assert os.path.exists(modelDir), "No model found at, " + str(modelDir)
+	return modelDir;
 
+# Prompt the user for an image 
+def promptUserImage():
+		
+	#image
+	imageFound = False
+	imageDir = ''
+	
+				
+	# Valid image path and file check	
+	while not imageFound:
+		imageDir = input("Please insert the directory location of the image file you want to test: ")
+		imageExt = os.path.splitext(imageDir)
+		
+		# check if model[0] is valid dir
+		if not os.path.exists(imageDir):
+			print("\nFilepath error: " + imageDir + " not found.\n")
+		# check if model[1] is a valid extension
+		elif (imageExt[1] == '.jpg') or (imageExt[1] == '.jpeg') or (imageExt[1] == '.png'):
+			imageFound = True
+			print("Image found.\n")
+		else:			
+			print("\nError: .jpg/.jpeg or .png image not found.")
+			print("Please select a compatible image type (<image name>.jpg/.jpeg, <image name>.png) \n")
+		
 
-	#image = input("Please insert the directory location of the image file you want to test: ")
+	return imageDir;
 
-	return 0;
+# Get things rolling
+welcome()
+model = promptUserModel()
+image = promptUserImage()
 
-promptUser()
-
+print(model)
+print(image)
