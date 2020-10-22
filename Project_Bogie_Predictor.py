@@ -47,7 +47,7 @@ def welcome():
 	print("\n")
 
 # Prompt the user for model
-def promptUserModel():
+def getModel():
 	
 	
 	#model
@@ -75,7 +75,7 @@ def promptUserModel():
 	return modelDir;
 
 # Prompt the user for an image 
-def promptUserImage():
+def getImage():
 		
 	#image
 	imageFound = False
@@ -101,10 +101,69 @@ def promptUserImage():
 
 	return imageDir;
 
-# Get things rolling
-welcome()
-model = promptUserModel()
-image = promptUserImage()
 
-print(model)
-print(image)
+
+# load and prepare the image for processing by the predictor
+def loadImage(imageDir):
+	# load the image
+	img = load_img(imageDir, target_size = (244, 244))
+
+	# convert the image to an array
+	img = img_to_array(img)
+
+	# reshape the img to have 3 channels
+	img = img.reshape(1, 244, 244, 3)
+
+	# declare the center for the pixel data
+	img = img.astype('float32')
+	img = img - [123.68, 116.779, 103.939]
+
+	return img
+
+
+# load the model and make the prediction against the image
+def makePrediction(model, image):
+	# take image and load it
+	print("Loading image...\n")
+	img = loadImage(image)
+	print("Image loaded\n")
+
+	# take model and load it
+	print("Loading model...\n")
+	model = load_model(model)
+	print("\nModel loaded\n")
+
+	# make sure the user is ready to continue
+	userReady = False
+	while not userReady:
+		response = input("Enter 'p' if you are ready to make the prediction: ")
+		if response == 'p' or response == 'P':
+			userReady = True
+
+	# make the prediction
+	prediction = model.predict(img)
+	
+	print(prediction[0])
+
+	# 0 = Modern Military Aircraft, 1 = Something Else
+	# Display the results
+	if prediction[0] == 0:
+		print("Bogie DETECTED")
+	elif prediction[0] == 1:
+		print("CLEAN image. Miliatry aircraft NOT found.")
+
+
+# start() is the primary workhorse of the predictor
+def start():
+	# Print the welcome message
+	welcome()
+	# Get the model
+	model = getModel()
+	# Get the image
+	image = getImage()
+	# Make the prediction
+	makePrediction(model, image)
+
+# Get things rolling
+start()
+
