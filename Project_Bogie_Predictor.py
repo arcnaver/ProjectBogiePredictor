@@ -42,9 +42,44 @@ from os import listdir
 # Welcome the user
 def welcome():
 	#prompts
-	print("Welcome to Project Bogie.")
-	print("The Predictor program will need a model, .h5 or hdf5, and an image, .jpg or .png, to test.")
+	print("\n\n")
+	print(" ############################################################################################")
+	print(" ############################################################################################")
+	print(" ##################################                         #################################")
+	print(" ##################################      PROJECT BOGIE      #################################")
+	print(" ##################################        PREDICTOR        #################################")
+	print(" ##################################                         #################################")
+	print(" ##################################  Copyright BYU-I 2020   #################################")
+	print(" ##################################  Author: Adam Tipton    #################################")
+	print(" ##################################                         #################################")
+	print(" ##################################  CS499 Final Project    #################################")
+	print(" ##################################                         #################################")
+	print(" ############################################################################################")
+	print(" ############################################################################################")
+	print(" #                                                                                          #")
+	print(" #                                 Welcome to Project Bogie.                                #")
+	print(" #                                                                                          #")
+	print(" #                                        *  *  *  *                                        #")
+	print(" #                                                                                          #")
+	print(" #  Project Bogie Predictor uses a convolutional nueral network model for image             #")
+	print(" #  classification. The model will predict whether or not it is likely that a given input   #")
+	print(" #  image would contain a modern military aircraft (a BOGIE) or something else.             #")
+	print(" #                                                                                          #")
+	print(" #  The predictor program will need a model with extension .h5 or hdf5, trained against a   #")
+	print(" #  data set of two classes. O)ne class containing only modern military aircraft, and       #")
+	print(" #  another class containing non-military and other images. The program will also need an   #")
+	print(" #  image file with either of the following extensions (.jpeg, .jpg, .png).                 #")
+	print(" #                                                                                          #")
+	print(" #  What you need to provide:                                                               #")
+	print(" #                                                                                          #")
+	print(" #                     1. The filepath to the predictive model. Extension .h5 or .hdf5      #")
+	print(" #                     2. The filepath to the image file. Extension .jpg/.jpeg/.png         #")
+	print(" #                                                                                          #")
+	print(" ############################################################################################")
+	print(" ############################################################################################")
 	print("\n")
+	print("\n")
+	print(" You will now need to provide the filepath location to the predictive model and test image. \n")
 
 # Prompt the user for model
 def getModel():
@@ -56,19 +91,19 @@ def getModel():
 	
 	# Valid model path and file check 
 	while not modelFound:
-		modelDir = input("Please insert the filepath of the predictive model: ")
+		modelDir = input(" Please insert the directory location of the predictive model: ")
 		modelExt = os.path.splitext(modelDir)
 		
 		# check if model[0] is valid dir
 		if not os.path.exists(modelDir):
-			print("\nFilepath error: " + modelDir + " not found.\n")
+			print("\n Filepath error: " + modelDir + " not found.\n")
 		# check if model[1] is a valid extension
 		elif (modelExt[1] == '.h5') or (modelExt[1] == '.hdf5'):
 			modelFound = True
-			print("Model found.\n")
+			print(" Model found.\n")
 		else:			
-			print("\nError: .h5 or .hdf5 model not found.")
-			print("Please select a compatible model (<model name>.h5, <model name>.hdf5) \n")
+			print("\n Error: .h5 or .hdf5 model not found.")
+			print(" Please select a compatible model (<model name>.h5, <model name>.hdf5) \n")
 	
 			
 
@@ -84,19 +119,19 @@ def getImage():
 				
 	# Valid image path and file check	
 	while not imageFound:
-		imageDir = input("Please insert the directory location of the image file you want to test: ")
+		imageDir = input(" Please insert the directory location of the image file you want to test: ")
 		imageExt = os.path.splitext(imageDir)
 		
 		# check if model[0] is valid dir
 		if not os.path.exists(imageDir):
-			print("\nFilepath error: " + imageDir + " not found.\n")
+			print("\n Filepath error: " + imageDir + " not found.\n")
 		# check if model[1] is a valid extension
 		elif (imageExt[1] == '.jpg') or (imageExt[1] == '.jpeg') or (imageExt[1] == '.png'):
 			imageFound = True
-			print("Image found.\n")
+			print(" Image found.\n")
 		else:			
-			print("\nError: .jpg/.jpeg or .png image not found.")
-			print("Please select a compatible image type (<image name>.jpg/.jpeg, <image name>.png) \n")
+			print("\n Error: .jpg/.jpeg or .png image not found.")
+			print(" Please select a compatible image type (<image name>.jpg/.jpeg, <image name>.png) \n")
 		
 
 	return imageDir;
@@ -124,33 +159,48 @@ def loadImage(imageDir):
 # load the model and make the prediction against the image
 def makePrediction(model, image):
 	# take image and load it
-	print("Loading image...\n")
+	print("\n Loading image...\n")
 	img = loadImage(image)
-	print("Image loaded\n")
+	print(" Image loaded\n")
 
 	# take model and load it
-	print("Loading model...\n")
+	print(" Loading model...\n")
 	model = load_model(model)
-	print("\nModel loaded\n")
+	print("\n Model loaded\n")
 
 	# make sure the user is ready to continue
 	userReady = False
 	while not userReady:
-		response = input("Enter 'p' if you are ready to make the prediction: ")
+		response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
 		if response == 'p' or response == 'P':
 			userReady = True
 
 	# make the prediction
-	prediction = model.predict(img)
+	print("\n")
+	print(" ##################################")
+	print(" ##################################\n")
+	print(" Making a prediction...\n")
+	prediction = model.predict(img, verbose = 0)
 	
+	print(" Numerical prediction value: ")
 	print(prediction[0])
-
-	# 0 = Modern Military Aircraft, 1 = Something Else
+	print("\n")
+		
 	# Display the results
-	if prediction[0] == 0:
-		print("Bogie DETECTED")
-	elif prediction[0] == 1:
-		print("CLEAN image. Miliatry aircraft NOT found.")
+	if prediction[0] <= 0.05:
+		print(" ******************")
+		print(" *                *")
+		print(" * Bogie DETECTED *")
+		print(" *                *")
+		print(" ******************")
+		print(" This file possibly contains a military aircraft.\n")
+	elif prediction[0] > 0.05:
+		print(" *****************")
+		print(" *               *")
+		print(" *  CLEAN image  *")
+		print(" *               *")
+		print(" *****************")
+		print(" Miliatry aircraft NOT found.\n")
 
 
 # start() is the primary workhorse of the predictor
