@@ -66,7 +66,7 @@ def welcome():
 	print(" #  image would contain a modern military aircraft (a BOGIE) or something else.             #")
 	print(" #                                                                                          #")
 	print(" #  The predictor program will need a model with extension .h5 or hdf5, trained against a   #")
-	print(" #  data set of two classes. O)ne class containing only modern military aircraft, and       #")
+	print(" #  data set of two classes. One class containing only modern military aircraft, and        #")
 	print(" #  another class containing non-military and other images. The program will also need an   #")
 	print(" #  image file with either of the following extensions (.jpeg, .jpg, .png).                 #")
 	print(" #                                                                                          #")
@@ -122,10 +122,10 @@ def getImage():
 		imageDir = input(" Please insert the directory location of the image file you want to test: ")
 		imageExt = os.path.splitext(imageDir)
 		
-		# check if model[0] is valid dir
+		# check if imageDir[0] is valid dir
 		if not os.path.exists(imageDir):
 			print("\n Filepath error: " + imageDir + " not found.\n")
-		# check if model[1] is a valid extension
+		# check if imageExt[1] is a valid extension
 		elif (imageExt[1] == '.jpg') or (imageExt[1] == '.jpeg') or (imageExt[1] == '.png'):
 			imageFound = True
 			print(" Image found.\n")
@@ -136,7 +136,51 @@ def getImage():
 
 	return imageDir;
 
+# Prompt the user for an image director of up to 5 images
+def getImageDirectory():
 
+	#image 
+	imageDirFound = False
+	imageDir = ''
+	imageExtensionFound = False
+
+	# Valid image path and file check
+	while not imageDirFound and not imageExtensionFound:
+		imageDir = input(" Please insert the directory location of the set of images you want to test: ")
+
+		# check if imageDir is a valid dir
+		if not os.path.exists(imageDir):
+			print("\n Filepath error: " + imageDir + " not found.\n")
+		else:
+			print(" Image directory found. \n")
+			print(" Testing for valid images. \n")
+
+		# Check that the directory contains valid images	
+		counter = 0
+		for filename in os.listdir(imageDir):
+			if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
+				counter += 1								
+				imageDirFound = True
+		
+		print(" Directory contains " + str(counter) +  " compatible images. \n")		
+
+	return imageDir
+
+# Choose between loading a single image versus an image dir
+def promptImageSelection():
+	# the imageDir variable
+	imageDir = ''
+	response = input(" Press 1 if you want to load a single image, 2 if you want to load an image directory (<= 5 images): ")
+	if not response.isnumeric():
+		imageDir = getImage()
+	elif int(response) == 1:
+		# call the function for a single image
+		imageDir = getImage()
+	elif int(response) == 2:
+		# call the function for a directory of images
+		imageDir = getImageDirectory()
+
+	return imageDir
 
 # load and prepare the image for processing by the predictor
 def loadImage(imageDir):
@@ -157,62 +201,207 @@ def loadImage(imageDir):
 
 
 # load the model and make the prediction against the image
-def makePrediction(model, image):
-	# take image and load it
-	print("\n Loading image...\n")
-	img = loadImage(image)
-	print(" Image loaded\n")
-
-	# take model and load it
-	print(" Loading model...\n")
-	model = load_model(model)
-	print("\n Model loaded\n")
-
-	# make sure the user is ready to continue
-	userReady = False
-	while not userReady:
-		response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
-		if response == 'p' or response == 'P':
-			userReady = True
-
-	# make the prediction
-	print("\n")
-	print(" ##################################")
-	print(" ##################################\n")
-	print(" Making a prediction...\n")
-	prediction = model.predict(img, verbose = 0)
+def makePrediction(model, imageDir, singleImage):
 	
-	print(" Numerical prediction value: ")
-	print(prediction[0])
-	print("\n")
+	if singleImage == True:
+		# take image and load it
+		print("\n Loading image...\n")
+		img = loadImage(imageDir)
+		print(" Image loaded\n")
 		
-	# Display the results
-	if prediction[0] <= 0.05:
-		print(" ******************")
-		print(" *                *")
-		print(" * Bogie DETECTED *")
-		print(" *                *")
-		print(" ******************")
-		print(" This file possibly contains a military aircraft.\n")
-	elif prediction[0] > 0.05:
-		print(" *****************")
-		print(" *               *")
-		print(" *  CLEAN image  *")
-		print(" *               *")
-		print(" *****************")
-		print(" Miliatry aircraft NOT found.\n")
+		# load the model
+		print(" Loading model...\n")
+		model = load_model(model)
+		print("\n Model loaded\n")
+
+		# make sure the user is ready to continue
+		userReady = False
+		while not userReady:
+			response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
+			if response == 'p' or response == 'P':
+				userReady = True
+
+		# make the prediction
+		print("\n")
+		print(" ##################################")
+		print(" ##################################\n")
+		print(" Making a prediction...\n")
+		prediction = model.predict(img, verbose = 0)
+	
+		print(" Numerical prediction value: ")
+		print(prediction[0])
+		print("\n")
+		
+		# Display the results
+		if prediction[0] <= 0.05:
+			print(" ******************")
+			print(" *                *")
+			print(" * Bogie DETECTED *")
+			print(" *                *")
+			print(" ******************")
+			print(" This file possibly contains a military aircraft.\n")
+		elif prediction[0] > 0.05:
+			print(" *****************")
+			print(" *               *")
+			print(" *  CLEAN image  *")
+			print(" *               *")
+			print(" *****************")
+			print(" Miliatry aircraft NOT found.\n")
+		
+	elif singleImage == False:
+		modelLoaded = False
+		
+		# take the image directory, process and load it
+		#Military counter
+		isMilitary = 0
+
+		#something else counter
+		somethingElse = 0
+
+		#image counter
+		imageCounter = 0
+
+		# first loop through the dir
+		for filename in os.listdir(imageDir):
+			
+			if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
+				#load the image
+				img = loadImage(imageDir + '/' + filename)
+				imageCounter += 1
+
+				# take model and load it
+				if not modelLoaded:				
+					print(" Loading model...\n")
+					model = load_model(model)
+					modelLoaded = True
+					print("\n")
+					print("**************")
+					print("**************")
+					print(" Model loaded")
+					print("**************")
+					print("**************\n")
+
+					# make sure the user is ready to continue
+					userReady = False
+					while not userReady:
+						response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
+						if response == 'p' or response == 'P':
+							userReady = True
+
+				# make the prediction
+				print("\n")
+				print(" ##################################")
+				print(" ##################################\n")
+				print("\n Making a prediction...\n")
+				prediction = model.predict(img, verbose = 0)
+	
+				print(" Numerical prediction value: ")
+				print(prediction[0])
+				print("\n")
+		
+				# Display the results
+				if prediction[0] <= 0.05:
+					isMilitary += 1
+					print(" ******************")
+					print(" *                *")
+					print(" * Bogie DETECTED *")
+					print(" *                *")
+					print(" ******************")
+					print(" Image " + filename + " possibly contains a military aircraft.\n")
+				elif prediction[0] > 0.05:
+					somethingElse += 1
+					print(" *****************")
+					print(" *               *")
+					print(" *  CLEAN image  *")
+					print(" *               *")
+					print(" *****************")
+					print(" Miliatry aircraft NOT found in image " + filename + "\n")
+
+				# We only allow up to 5 images, break out of the loop
+				if imageCounter == 5:
+					break
+
+		#ratio
+		milRatio = isMilitary / imageCounter
+		elseRatio = somethingElse / imageCounter
+
+		print(' ' + str(isMilitary) + ' out of ' + str(imageCounter) + ' images were classified Military.')
+		print('\n Breakdown: ')
+		print(' ' + str(milRatio * 100) + '% images were thought to be military...')
+		print(' ' + str(elseRatio * 100) + '% images were thought to be something else...\n\n')
+
+
+	
+					
+	## take model and load it
+	#print(" Loading model...\n")
+	#model = load_model(model)
+	#print("\n Model loaded\n")
+
+	## make sure the user is ready to continue
+	#userReady = False
+	#while not userReady:
+	#	response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
+	#	if response == 'p' or response == 'P':
+	#		userReady = True
+
+	## make the prediction
+	#print("\n")
+	#print(" ##################################")
+	#print(" ##################################\n")
+	#print(" Making a prediction...\n")
+	#prediction = model.predict(img, verbose = 0)
+	
+	#print(" Numerical prediction value: ")
+	#print(prediction[0])
+	#print("\n")
+		
+	## Display the results
+	#if prediction[0] <= 0.05:
+	#	print(" ******************")
+	#	print(" *                *")
+	#	print(" * Bogie DETECTED *")
+	#	print(" *                *")
+	#	print(" ******************")
+	#	print(" This file possibly contains a military aircraft.\n")
+	#elif prediction[0] > 0.05:
+	#	print(" *****************")
+	#	print(" *               *")
+	#	print(" *  CLEAN image  *")
+	#	print(" *               *")
+	#	print(" *****************")
+	#	print(" Miliatry aircraft NOT found.\n")
 
 
 # start() is the primary workhorse of the predictor
 def start():
 	# Print the welcome message
-	welcome()
+	#welcome()
 	# Get the model
 	model = getModel()
 	# Get the image
-	image = getImage()
+	#imageDir = promptImageSelection()
+	
+	# Give the user a choice between single image or directory
+	imageDir = ''
+	singleImage = False
+	response = input(" Press 1 if you want to load a single image, 2 if you want to load an image directory (<= 5 images): ")
+	if not response.isnumeric():
+		imageDir = getImage()
+		singleImage = True
+	elif int(response) == 1:
+		# call the function for a single image
+		imageDir = getImage()
+		singleImage = True
+	elif int(response) == 2:
+		# call the function for a directory of images
+		imageDir = getImageDirectory()
+		singleImage = False
+	
+		#getImageDirectory()
 	# Make the prediction
-	makePrediction(model, image)
+	print("going into pred")
+	makePrediction(model, imageDir, singleImage)
 
 # Get things rolling
 start()
