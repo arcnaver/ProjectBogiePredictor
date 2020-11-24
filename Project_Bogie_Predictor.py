@@ -325,7 +325,7 @@ def makePrediction(model, imageDir, singleImage):
 		milRatio = isMilitary / imageCounter
 		elseRatio = somethingElse / imageCounter
 
-		print(' ' + str(isMilitary) + ' out of ' + str(imageCounter) + ' images were classified Military.')
+		print(' ' + str(isMilitary) + ' out of ' + str(imageCounter) + ' images were classified as containing Military Aircraft.')
 		print('\n Breakdown: ')
 		print(' ' + str(milRatio * 100) + '% images were thought to be military...')
 		print(' ' + str(elseRatio * 100) + '% images were thought to be something else...\n\n')
