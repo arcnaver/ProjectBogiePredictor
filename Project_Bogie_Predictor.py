@@ -330,58 +330,14 @@ def makePrediction(model, imageDir, singleImage):
 		print(' ' + str(milRatio * 100) + '% images were thought to be military...')
 		print(' ' + str(elseRatio * 100) + '% images were thought to be something else...\n\n')
 
-
-	
-					
-	## take model and load it
-	#print(" Loading model...\n")
-	#model = load_model(model)
-	#print("\n Model loaded\n")
-
-	## make sure the user is ready to continue
-	#userReady = False
-	#while not userReady:
-	#	response = input(" Enter 'p' if you are ready to make the (p)rediction: ")
-	#	if response == 'p' or response == 'P':
-	#		userReady = True
-
-	## make the prediction
-	#print("\n")
-	#print(" ##################################")
-	#print(" ##################################\n")
-	#print(" Making a prediction...\n")
-	#prediction = model.predict(img, verbose = 0)
-	
-	#print(" Numerical prediction value: ")
-	#print(prediction[0])
-	#print("\n")
-		
-	## Display the results
-	#if prediction[0] <= 0.05:
-	#	print(" ******************")
-	#	print(" *                *")
-	#	print(" * Bogie DETECTED *")
-	#	print(" *                *")
-	#	print(" ******************")
-	#	print(" This file possibly contains a military aircraft.\n")
-	#elif prediction[0] > 0.05:
-	#	print(" *****************")
-	#	print(" *               *")
-	#	print(" *  CLEAN image  *")
-	#	print(" *               *")
-	#	print(" *****************")
-	#	print(" Miliatry aircraft NOT found.\n")
-
-
 # start() is the primary workhorse of the predictor
 def start():
 	# Print the welcome message
-	#welcome()
+	welcome()
+	
 	# Get the model
 	model = getModel()
-	# Get the image
-	#imageDir = promptImageSelection()
-	
+		
 	# Give the user a choice between single image or directory
 	imageDir = ''
 	singleImage = False
@@ -396,9 +352,8 @@ def start():
 	elif int(response) == 2:
 		# call the function for a directory of images
 		imageDir = getImageDirectory()
-		singleImage = False
-	
-		#getImageDirectory()
+		singleImage = False	
+		
 	# Make the prediction
 	print("going into pred")
 	makePrediction(model, imageDir, singleImage)
