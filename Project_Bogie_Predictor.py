@@ -212,7 +212,12 @@ def makePrediction(model, imageDir, singleImage):
 		# load the model
 		print(" Loading model...\n")
 		model = load_model(model)
-		print("\n Model loaded\n")
+		print("\n")
+		print("**************")
+		print("**************")
+		print(" Model loaded")
+		print("**************")
+		print("**************\n")
 
 		# make sure the user is ready to continue
 		userReady = False
@@ -228,6 +233,7 @@ def makePrediction(model, imageDir, singleImage):
 		print(" Making a prediction...\n")
 		prediction = model.predict(img, verbose = 0)
 	
+		print("\n")
 		print(" Numerical prediction value: ")
 		print(prediction[0])
 		print("\n")
@@ -341,7 +347,7 @@ def start():
 	# Give the user a choice between single image or directory
 	imageDir = ''
 	singleImage = False
-	response = input(" Press 1 if you want to load a single image, 2 if you want to load an image directory (<= 5 images): ")
+	response = input(" Press 1 if you want to load a single image, 2 if you want to load an image directory (up to 5 images): ")
 	if not response.isnumeric():
 		imageDir = getImage()
 		singleImage = True
@@ -355,7 +361,7 @@ def start():
 		singleImage = False	
 		
 	# Make the prediction
-	print("going into pred")
+	print(" Getting ready to make the prediction.")
 	makePrediction(model, imageDir, singleImage)
 
 # Get things rolling
